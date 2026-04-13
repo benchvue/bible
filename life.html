@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>동물 스무고개 게임</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+    font-family:"Malgun Gothic",sans-serif;
+    background:#eef4f8;
+    padding:20px;
+}
+
+h1{
+    text-align:center;
+    font-size:2rem;
+    margin-bottom:10px;
+}
+
+.topMenu{
+    text-align:center;
+    margin-bottom:22px;
+}
+
+.topMenu button{
+    margin:6px;
+    padding:12px 24px;
+    border:none;
+    border-radius:10px;
+    background:#2f5d8a;
+    color:#fff;
+    font-size:1rem;
+    cursor:pointer;
+    font-weight:bold;
+    transition:.2s;
+}
+
+/* 현재 선택된 버튼 */
+.topMenu button.activeGame{
+    background:#c0392b;
+    box-shadow:0 0 0 4px rgba(192,57,43,.18);
+    transform:translateY(-1px);
+}
+
+.sub{
+    text-align:center;
+    margin-bottom:20px;
+    color:#444;
+}
+
+.grid{
+    max-width:1450px;
+    margin:auto;
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:16px;
+}
+
+.card{
+    height:135px;
+    perspective:1000px;
+    cursor:pointer;
+}
+
+.card-inner{
+    width:100%;
+    height:100%;
+    position:relative;
+    transition:transform .75s;
+    transform-style:preserve-3d;
+}
+
+.card.open .card-inner{
+    transform:rotateY(180deg);
+}
+
+.front,.back{
+    position:absolute;
+    width:100%;
+    height:100%;
+    border-radius:16px;
+    backface-visibility:hidden;
+    box-shadow:0 8px 16px rgba(0,0,0,.15);
+}
+
+.front{
+    background:#2f5d8a;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.badge{
+    width:62px;
+    height:62px;
+    border-radius:50%;
+    background:#fff;
+    color:#2f5d8a;
+    font-size:1.8rem;
+    font-weight:900;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.back{
+    background:#fff;
+    color:#111;
+    transform:rotateY(180deg);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    padding:10px;
+    font-size:1rem;
+    font-weight:bold;
+    line-height:1.4;
+}
+
+.controls{
+    text-align:center;
+    margin-top:24px;
+}
+
+.controls button{
+    margin:6px;
+    padding:12px 24px;
+    border:none;
+    border-radius:10px;
+    color:#fff;
+    cursor:pointer;
+    font-size:1rem;
+    font-weight:bold;
+}
+
+.btn1{background:#c0392b;}
+.btn2{background:#2f5d8a;}
+.btn3{background:#1f5f3b;}
+
+.answerScreen{
+    display:none;
+    text-align:center;
+    max-width:1000px;
+    margin:30px auto 0;
+}
+
+.answerTitle{
+    font-size:2.4rem;
+    font-weight:bold;
+    color:#0b2239;
+    margin-bottom:20px;
+}
+
+.answerScreen img{
+    max-width:100%;
+    width:750px;
+    border-radius:18px;
+    box-shadow:0 10px 20px rgba(0,0,0,.2);
+}
+
+.quote{
+    max-width:850px;
+    margin:22px auto 0;
+    padding:20px;
+    background:#fff;
+    border-radius:16px;
+    font-size:1.35rem;
+    font-weight:bold;
+    line-height:1.7;
+    color:#0b2239;
+    box-shadow:0 8px 18px rgba(0,0,0,.12);
+}
+
+.game{
+    display:none;
+}
+
+.game.active{
+    display:block;
+}
+
+@media(max-width:1000px){
+.grid{grid-template-columns:repeat(4,1fr);}
+}
+
+@media(max-width:700px){
+.grid{grid-template-columns:repeat(3,1fr);}
+}
+</style>
+</head>
+
+<body>
+
+<h1>스무고개 카드 게임</h1>
+
+<div class="topMenu">
+    <button id="btn-penguin" class="activeGame" onclick="selectGame('penguin')">동물 1</button>
+    <button id="btn-albatross" onclick="selectGame('albatross')">동물 2</button>
+</div>
+
+<!-- 황제 펭귄 -->
+<div class="game active" id="penguin">
+
+<div id="penguinGame">
+<div class="sub">1번부터 눌러 힌트를 확인하세요.</div>
+
+<div class="grid" id="penguinGrid"></div>
+
+<div class="controls">
+<button class="btn1" onclick="showAnswer('penguin')">정답 보기</button>
+<button class="btn2" onclick="resetCards('penguinGrid')">초기화</button>
+<button class="btn3" onclick="showAll('penguinGrid')">모두 보기</button>
+</div>
+</div>
+
+<div class="answerScreen" id="penguinAnswer">
+<div class="answerTitle">황제 펭귄</div>
+
+<img src="https://www.antarctica.gov.au/site/assets/files/67453/rs14963.1600x0.jpg">
+
+<div class="quote">
+“황제 펭귄은 가장 추운 곳에서 생명을 낳습니다.<br>
+자기 몸을 깎아가며, 먹지 못하면서도 끝까지 알을 품습니다.<br>
+왜냐하면 생명이 더 중요하기 때문입니다.”
+</div>
+
+<div class="controls">
+<button class="btn2" onclick="backToGame('penguin')">돌아가기</button>
+</div>
+</div>
+
+</div>
+
+<!-- 알바트로스 -->
+<div class="game" id="albatross">
+
+<div id="albatrossGame">
+<div class="sub">1번부터 눌러 힌트를 확인하세요.</div>
+
+<div class="grid" id="albatrossGrid"></div>
+
+<div class="controls">
+<button class="btn1" onclick="showAnswer('albatross')">정답 보기</button>
+<button class="btn2" onclick="resetCards('albatrossGrid')">초기화</button>
+<button class="btn3" onclick="showAll('albatrossGrid')">모두 보기</button>
+</div>
+</div>
+
+<div class="answerScreen" id="albatrossAnswer">
+<div class="answerTitle">알바트로스</div>
+
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c4/Diomedea_exulans_in_flight_-_SE_Tasmania.jpg/1280px-Diomedea_exulans_in_flight_-_SE_Tasmania.jpg">
+
+<div class="quote">
+“알바트로스는 좁은 하늘에 머물지 않습니다.<br>
+보이지 않는 바람을 믿고 끝없는 바다를 건너갑니다.<br>
+왜냐하면 큰 생명은 멀리 보기 때문입니다.”
+</div>
+
+<div class="controls">
+<button class="btn2" onclick="backToGame('albatross')">돌아가기</button>
+</div>
+</div>
+
+</div>
+
+<script>
+function makeCards(targetId,hints){
+    const grid=document.getElementById(targetId);
+
+    hints.forEach((txt,i)=>{
+        const card=document.createElement("div");
+        card.className="card";
+
+        card.innerHTML=`
+        <div class="card-inner">
+            <div class="front">
+                <div class="badge">${i+1}</div>
+            </div>
+            <div class="back">${txt}</div>
+        </div>
+        `;
+
+        card.onclick=()=>card.classList.toggle("open");
+        grid.appendChild(card);
+    });
+}
+
+const penguinHints=[
+"이 동물은 새입니다.","하지만 날지 못합니다.","물속에서 빠릅니다.","추운 곳에 삽니다.","검정과 흰색 몸입니다.",
+"무리 생활합니다.","걷는 모습이 귀엽습니다.","물고기와 크릴을 먹습니다.","잠수를 잘합니다.","남극에 삽니다.",
+"펭귄 중 가장 큽니다.","40kg까지 자랍니다.","겨울에 번식합니다.","알은 발 위에 둡니다.","수컷이 약 60~70일 품습니다.",
+"먹지 않고 버팁니다.","영하 40~60도 추위도 견딥니다.","몸을 붙여 열을 나눕니다.","엄마가 먹이를 구해 옵니다.","이름 첫 글자는 황제입니다."
+];
+
+const albaHints=[
+"이 동물은 새입니다.","바다에서 오래 삽니다.","몸집이 큽니다.","물고기와 오징어를 먹습니다.","날개가 매우 깁니다.",
+"걷기보다 비행이 유명합니다.","외딴 섬에서 번식합니다.","짝을 오래 유지합니다.","암수 함께 알을 돌봅니다.","활공 비행의 달인입니다.",
+"바람을 이용합니다.","날갯짓 거의 안 합니다.","하루 수백km 이동합니다.","수천km 바다를 건넙니다.","날개 길이가 매우 깁니다.",
+"큰 종은 3.5m 이상입니다.","남반구 바다에 많습니다.","선원 전설에 등장합니다.","긴 여행의 상징입니다.","이름은 알바...로 시작합니다."
+];
+
+makeCards("penguinGrid",penguinHints);
+makeCards("albatrossGrid",albaHints);
+
+function showAll(id){
+    document.querySelectorAll("#"+id+" .card").forEach(c=>c.classList.add("open"));
+}
+
+function resetCards(id){
+    document.querySelectorAll("#"+id+" .card").forEach(c=>c.classList.remove("open"));
+}
+
+function showAnswer(type){
+    document.getElementById(type+"Game").style.display="none";
+    document.getElementById(type+"Answer").style.display="block";
+}
+
+function backToGame(type){
+    document.getElementById(type+"Answer").style.display="none";
+    document.getElementById(type+"Game").style.display="block";
+    showAll(type+"Grid");
+}
+
+function selectGame(type){
+    document.querySelectorAll(".game").forEach(g=>g.classList.remove("active"));
+    document.getElementById(type).classList.add("active");
+
+    document.getElementById("btn-penguin").classList.remove("activeGame");
+    document.getElementById("btn-albatross").classList.remove("activeGame");
+
+    document.getElementById("btn-"+type).classList.add("activeGame");
+}
+</script>
+
+</body>
+</html>

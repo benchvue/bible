@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>예수님의 3가지 비유와 종교인의 3 도전</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:"Malgun Gothic",sans-serif;
+    background:#f4f6f8;
+    padding:40px 20px;
+}
+
+h1{
+    text-align:center;
+    margin-bottom:35px;
+    font-size:2rem;
+    line-height:1.4;
+}
+
+/* 4 Columns */
+.grid{
+    max-width:1700px;
+    margin:auto;
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr 1fr;
+    column-gap:70px;
+    row-gap:24px;
+}
+
+/* 카드 */
+.card{
+    height:185px;
+    perspective:1000px;
+    cursor:pointer;
+    position:relative;
+    overflow:visible;
+}
+
+.card-inner{
+    width:100%;
+    height:100%;
+    position:relative;
+    transition:transform .75s;
+    transform-style:preserve-3d;
+}
+
+.card.flipped .card-inner{
+    transform:rotateY(180deg);
+}
+
+.card-front,
+.card-back{
+    position:absolute;
+    width:100%;
+    height:100%;
+    border-radius:18px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    padding:14px;
+    color:white;
+    font-weight:bold;
+    line-height:1.3;
+    backface-visibility:hidden;
+    box-shadow:0 10px 20px rgba(0,0,0,.15);
+}
+
+/* 앞면 */
+.card-front{
+    font-size:2rem;
+    letter-spacing:-1px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+/* 뒷면 공통 */
+.card-back{
+    font-size:2.1rem;
+    transform:rotateY(180deg);
+    word-break:keep-all;
+}
+
+/* 4열 답변 카드만 80% 축소 */
+.col4 .card-back{
+    font-size:1.68rem;   /* 2.1 x 0.8 */
+    line-height:1.2;
+    padding:12px;
+}
+
+/* 컬럼 색상 */
+.col1 .card-front{ background:#2f5d8a; }
+.col2 .card-front{ background:#c0392b; }
+.col3 .card-front{ background:#2e8b57; }
+.col4 .card-front{ background:#2f5d8a; }
+
+.col1 .card-back{ background:#1c3e61; }
+.col2 .card-back{ background:#8f251b; }
+.col3 .card-back{ background:#1f5c39; }
+.col4 .card-back{ background:#1c3e61; }
+
+/* VS */
+.vs::after{
+    content:"VS";
+    position:absolute;
+    top:50%;
+    right:-35px;
+    transform:translate(50%,-50%);
+    width:58px;
+    height:58px;
+    border-radius:50%;
+    background:#fff;
+    color:#333;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:1.45rem;
+    font-weight:900;
+    box-shadow:0 4px 12px rgba(0,0,0,.18);
+    z-index:99;
+}
+
+/* 반응형 */
+@media(max-width:1300px){
+    .grid{
+        grid-template-columns:1fr 1fr;
+    }
+
+    .vs::after{
+        display:none;
+    }
+
+    .card-front{
+        font-size:1.7rem;
+    }
+
+    .card-back{
+        font-size:1.6rem;
+    }
+
+    .col4 .card-back{
+        font-size:1.3rem;
+    }
+}
+
+@media(max-width:700px){
+    .grid{
+        grid-template-columns:1fr;
+    }
+
+    .card-front{
+        font-size:1.5rem;
+    }
+
+    .card-back{
+        font-size:1.35rem;
+    }
+
+    .col4 .card-back{
+        font-size:1.1rem;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<h1>예수님의 3가지 비유와 종교인의 3 도전(질문)</h1>
+
+<div class="grid">
+
+<!-- Row 1 -->
+<div class="card col1 vs" onclick="flip(this)">
+<div class="card-inner">
+<div class="card-front">비유 1</div>
+<div class="card-back">두 아들</div>
+</div>
+</div>
+
+<div class="card col2" onclick="flip(this)">
+<div class="card-inner">
+<div class="card-front">도전 1</div>
+<div class="card-back">권위가 어디서 왔느냐?</div>
+</div>
+</div>
+
+<div class="card col3" onclick="flip(this)">
+<div class="card-inner">
+<div class="card-front">연결점 1</div>
+<div class="card-back">순종 없는 종교</div>
+</div>
+</div>
+
+<div class="card col4" onclick="flip(this)">
+<div class="card-inner">
+<div class="card-front">답변 1</div>
+<div class="card-back">요한의 세례가 어디로부터 왔느냐?<br>하늘로부터냐 사람으로부터냐?</div>
+</div>
+</div>
+
+<!-- Row 2 -->
+<div class="card col1 vs" onclick="flip(this)">
+<div class="card-inner">
+<div class="card-front">비유 2</div>
+<div class="card-back">악한 농부</div>
+</div>
+</div>
+
+<div class="card col2" onclick="flip(this)">
+<div class="card-inner">
+<div class="card-front">도전 2</div>
+<div class="card-back">가이사 세금은 누구한테?</div>
+</div>
+</div>
+
+<div class="card col3" onclick="flip(this)">
+<div class="card-inner">
+<div class="card-front">연결점 2</div>
+<div class="card-back">소유권 착각</div>
+</div>
+</div>
+
+<div class="card col4" onclick="flip(this)">
+<div class="card-inner">
+<div class="card-front">답변 2</div>
+<div class="card-back">가이사의 것은 가이사에게,<br>하나님의 것은 하나님께 바치라.</div>
+</div>
+</div>
+
+<!-- Row 3 -->
+<div class="card col1 vs" onclick="flip(this)">
+<div class="card-inner">
+<div class="card-front">비유 3</div>
+<div class="card-back">혼인잔치</div>
+</div>
+</div>
+
+<div class="card col2" onclick="flip(this)">
+<div class="card-inner">
+<div class="card-front">도전 3</div>
+<div class="card-back">7형제의 아내는 누구의 아내?</div>
+</div>
+</div>
+
+<div class="card col3" onclick="flip(this)">
+<div class="card-inner">
+<div class="card-front">연결점 3</div>
+<div class="card-back">하나님 나라 거절</div>
+</div>
+</div>
+
+<div class="card col4" onclick="flip(this)">
+<div class="card-inner">
+<div class="card-front">답변 3</div>
+<div class="card-back">부활 때에는 장가도 아니 가고<br>시집도 아니 가고<br>하늘에 있는 천사들과 같다</div>
+</div>
+</div>
+
+</div>
+
+<script>
+function flip(card){
+    card.classList.toggle("flipped");
+}
+</script>
+
+</body>
+</html>
