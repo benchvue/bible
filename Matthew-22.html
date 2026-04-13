@@ -100,26 +100,7 @@ h1{
 .col3 .card-back{background:#1f5c39;}
 .col4 .card-back{background:#1c3e61;}
 
-/* VS */
-.vs::after{
-    content:"VS";
-    position:absolute;
-    top:50%;
-    right:-7px;
-    transform:translate(50%,-50%);
-    width:24px;
-    height:24px;
-    border-radius:50%;
-    background:#fff;
-    color:#111;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    font-size:.55rem;
-    font-weight:900;
-    box-shadow:0 2px 8px rgba(0,0,0,.2);
-    z-index:99;
-}
+
 
 /* PC에서는 4 x 3 */
 @media screen and (min-width:900px){
@@ -155,12 +136,7 @@ h1{
         font-size:1.12rem;
     }
 
-    .vs::after{
-        width:56px;
-        height:56px;
-        right:-30px;
-        font-size:1.25rem;
-    }
+
 }
 </style>
 </head>
@@ -172,7 +148,7 @@ h1{
 <div class="grid">
 
 <!-- 1 -->
-<div class="card col1 vs" onclick="flip(this)">
+<div class="card col1" onclick="flip(this)">
 <div class="card-inner">
 <div class="card-front">비유 1</div>
 <div class="card-back">두 아들</div>
@@ -198,7 +174,7 @@ h1{
 </div></div>
 
 <!-- 3 -->
-<div class="card col1 vs" onclick="flip(this)">
+<div class="card col1" onclick="flip(this)">
 <div class="card-inner">
 <div class="card-front">비유 2</div>
 <div class="card-back">악한 농부</div>
@@ -224,7 +200,7 @@ h1{
 </div></div>
 
 <!-- 5 -->
-<div class="card col1 vs" onclick="flip(this)">
+<div class="card col1" onclick="flip(this)">
 <div class="card-inner">
 <div class="card-front">비유 3</div>
 <div class="card-back">혼인잔치</div>
