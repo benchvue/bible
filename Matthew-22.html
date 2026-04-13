@@ -12,79 +12,35 @@
     box-sizing:border-box;
 }
 
-html,body{
-    width:100%;
-    height:100%;
-}
-
 body{
     font-family:"Malgun Gothic",sans-serif;
     background:#f4f6f8;
-}
-
-/* =========================
-세로모드 안내화면
-========================= */
-.rotate-screen{
-    position:fixed;
-    inset:0;
-    background:#000;
-    color:#fff;
-    z-index:9999;
-    display:none;
-    justify-content:center;
-    align-items:center;
-    flex-direction:column;
-    text-align:center;
-    padding:30px;
-}
-
-.rotate-icon{
-    font-size:4rem;
-    margin-bottom:18px;
-}
-
-.rotate-title{
-    font-size:2rem;
-    font-weight:bold;
-    margin-bottom:10px;
-}
-
-.rotate-sub{
-    color:#ccc;
-    font-size:1.05rem;
-    line-height:1.6;
-}
-
-/* =========================
-게임 본체
-========================= */
-.main{
-    display:block;
     padding:12px;
 }
 
+/* 제목 */
 h1{
     text-align:center;
-    margin-bottom:12px;
+    margin-bottom:14px;
     font-size:1.15rem;
     line-height:1.3;
 }
 
-/* 4열 고정 */
+/* 기본 = 모바일 가로 2 x 6 */
 .grid{
     display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:8px;
-    max-width:1400px;
+    grid-template-columns:repeat(2,1fr);
+    gap:10px;
+    max-width:1000px;
     margin:auto;
 }
 
+/* 카드 */
 .card{
-    height:96px;
+    height:95px;
     perspective:1000px;
-    position:relative;
     cursor:pointer;
+    position:relative;
     overflow:visible;
 }
 
@@ -115,12 +71,12 @@ h1{
     font-weight:bold;
     line-height:1.15;
     backface-visibility:hidden;
-    box-shadow:0 5px 12px rgba(0,0,0,.18);
+    box-shadow:0 4px 12px rgba(0,0,0,.18);
 }
 
 /* 앞면 */
 .card-front{
-    font-size:.92rem;
+    font-size:.95rem;
 }
 
 /* 뒷면 */
@@ -129,9 +85,8 @@ h1{
     font-size:.72rem;
 }
 
-/* 4열 */
 .col4 .card-back{
-    font-size:.63rem;
+    font-size:.62rem;
 }
 
 /* 색상 */
@@ -150,7 +105,7 @@ h1{
     content:"VS";
     position:absolute;
     top:50%;
-    right:-6px;
+    right:-7px;
     transform:translate(50%,-50%);
     width:24px;
     height:24px;
@@ -162,32 +117,14 @@ h1{
     align-items:center;
     font-size:.55rem;
     font-weight:900;
-    z-index:500;
-    box-shadow:0 2px 8px rgba(0,0,0,.25);
+    box-shadow:0 2px 8px rgba(0,0,0,.2);
+    z-index:99;
 }
 
-/* =========================
-iPhone 세로일 때만 차단
-========================= */
-@media screen and (max-width:900px) and (orientation:portrait){
-    .rotate-screen{
-        display:flex;
-    }
+/* PC에서는 4 x 3 */
+@media screen and (min-width:900px){
 
-    .main{
-        display:none;
-    }
-}
-
-/* PC / Tablet */
-@media screen and (min-width:901px){
-
-    .rotate-screen{
-        display:none !important;
-    }
-
-    .main{
-        display:block !important;
+    body{
         padding:40px 20px;
     }
 
@@ -197,7 +134,9 @@ iPhone 세로일 때만 차단
     }
 
     .grid{
+        grid-template-columns:repeat(4,1fr);
         gap:24px;
+        max-width:1700px;
     }
 
     .card{
@@ -228,112 +167,94 @@ iPhone 세로일 때만 차단
 
 <body>
 
-<!-- 세로모드 -->
-<div class="rotate-screen">
-    <div class="rotate-icon">📱↻</div>
-    <div class="rotate-title">가로로 돌려주세요</div>
-    <div class="rotate-sub">
-        iPhone 가로모드에서<br>
-        카드 게임이 시작됩니다.
-    </div>
-</div>
-
-<!-- 본문 -->
-<div class="main">
-
 <h1>예수님의 3가지 비유와 종교인의 3 도전(질문)</h1>
 
 <div class="grid">
 
-<!-- row1 -->
+<!-- 1 -->
 <div class="card col1 vs" onclick="flip(this)">
 <div class="card-inner">
-<div class="card-front">비유1</div>
+<div class="card-front">비유 1</div>
 <div class="card-back">두 아들</div>
 </div></div>
 
 <div class="card col2" onclick="flip(this)">
 <div class="card-inner">
-<div class="card-front">도전1</div>
+<div class="card-front">도전 1</div>
 <div class="card-back">권위가 어디서 왔느냐?</div>
 </div></div>
 
+<!-- 2 -->
 <div class="card col3" onclick="flip(this)">
 <div class="card-inner">
-<div class="card-front">연결1</div>
+<div class="card-front">연결점 1</div>
 <div class="card-back">순종 없는 종교</div>
 </div></div>
 
 <div class="card col4" onclick="flip(this)">
 <div class="card-inner">
-<div class="card-front">답변1</div>
+<div class="card-front">답변 1</div>
 <div class="card-back">요한의 세례가 어디로부터냐?</div>
 </div></div>
 
-<!-- row2 -->
+<!-- 3 -->
 <div class="card col1 vs" onclick="flip(this)">
 <div class="card-inner">
-<div class="card-front">비유2</div>
+<div class="card-front">비유 2</div>
 <div class="card-back">악한 농부</div>
 </div></div>
 
 <div class="card col2" onclick="flip(this)">
 <div class="card-inner">
-<div class="card-front">도전2</div>
+<div class="card-front">도전 2</div>
 <div class="card-back">가이사 세금은 누구한테?</div>
 </div></div>
 
+<!-- 4 -->
 <div class="card col3" onclick="flip(this)">
 <div class="card-inner">
-<div class="card-front">연결2</div>
+<div class="card-front">연결점 2</div>
 <div class="card-back">소유권 착각</div>
 </div></div>
 
 <div class="card col4" onclick="flip(this)">
 <div class="card-inner">
-<div class="card-front">답변2</div>
+<div class="card-front">답변 2</div>
 <div class="card-back">가이사의 것은 가이사에게</div>
 </div></div>
 
-<!-- row3 -->
+<!-- 5 -->
 <div class="card col1 vs" onclick="flip(this)">
 <div class="card-inner">
-<div class="card-front">비유3</div>
+<div class="card-front">비유 3</div>
 <div class="card-back">혼인잔치</div>
 </div></div>
 
 <div class="card col2" onclick="flip(this)">
 <div class="card-inner">
-<div class="card-front">도전3</div>
+<div class="card-front">도전 3</div>
 <div class="card-back">7형제의 아내는 누구?</div>
 </div></div>
 
+<!-- 6 -->
 <div class="card col3" onclick="flip(this)">
 <div class="card-inner">
-<div class="card-front">연결3</div>
+<div class="card-front">연결점 3</div>
 <div class="card-back">하나님 나라 거절</div>
 </div></div>
 
 <div class="card col4" onclick="flip(this)">
 <div class="card-inner">
-<div class="card-front">답변3</div>
+<div class="card-front">답변 3</div>
 <div class="card-back">천사들과 같다</div>
 </div></div>
 
-</div>
 </div>
 
 <script>
 function flip(card){
     card.classList.toggle("flipped");
 }
-
-/* iPhone orientation 강제 새로고침급 재렌더 */
-window.addEventListener("orientationchange",()=>{
-    setTimeout(()=>{
-        location.reload();
-    },250);
-});
 </script>
 
 </body>
