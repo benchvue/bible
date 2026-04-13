@@ -3,210 +3,242 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>동물 스무고개 게임</title>
+<title>동물 스무고개 게임 - Modern Edition</title>
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 
+:root{
+--primary:#2563eb;
+--primary2:#1d4ed8;
+--danger:#dc2626;
+--success:#059669;
+--dark:#0f172a;
+--glass:rgba(255,255,255,.16);
+--border:rgba(255,255,255,.28);
+}
+
 body{
-    font-family:"Malgun Gothic",sans-serif;
-    background:#eef4f8;
-    padding:20px;
+font-family:Inter,"Malgun Gothic",sans-serif;
+background:
+radial-gradient(circle at top left,#60a5fa 0%,transparent 35%),
+radial-gradient(circle at bottom right,#34d399 0%,transparent 35%),
+linear-gradient(135deg,#0f172a,#1e293b,#334155);
+min-height:100vh;
+padding:28px;
+color:white;
+}
+
+.container{
+max-width:1500px;
+margin:auto;
 }
 
 h1{
-    text-align:center;
-    font-size:2rem;
-    margin-bottom:10px;
+text-align:center;
+font-size:2.3rem;
+font-weight:800;
+margin-bottom:18px;
+letter-spacing:-1px;
 }
 
 .topMenu{
-    text-align:center;
-    margin-bottom:22px;
+display:flex;
+justify-content:center;
+gap:12px;
+margin-bottom:28px;
+flex-wrap:wrap;
 }
 
 .topMenu button{
-    margin:6px;
-    padding:12px 24px;
-    border:none;
-    border-radius:10px;
-    background:#2f5d8a;
-    color:#fff;
-    font-size:1rem;
-    cursor:pointer;
-    font-weight:bold;
-    transition:.2s;
+padding:14px 28px;
+border:none;
+border-radius:16px;
+background:rgba(255,255,255,.08);
+backdrop-filter:blur(14px);
+color:white;
+font-size:1rem;
+font-weight:700;
+cursor:pointer;
+transition:.25s;
+border:1px solid rgba(255,255,255,.12);
 }
 
-/* 현재 선택된 버튼 */
+.topMenu button:hover{
+transform:translateY(-2px);
+background:rgba(255,255,255,.16);
+}
+
 .topMenu button.activeGame{
-    background:#c0392b;
-    box-shadow:0 0 0 4px rgba(192,57,43,.18);
-    transform:translateY(-1px);
+background:linear-gradient(135deg,var(--primary),var(--primary2));
+box-shadow:0 10px 30px rgba(37,99,235,.35);
 }
 
 .sub{
-    text-align:center;
-    margin-bottom:20px;
-    color:#444;
+text-align:center;
+color:rgba(255,255,255,.82);
+margin-bottom:22px;
+font-size:1.05rem;
 }
 
 .grid{
-    max-width:1450px;
-    margin:auto;
-    display:grid;
-    grid-template-columns:repeat(5,1fr);
-    gap:16px;
+display:grid;
+grid-template-columns:repeat(5,1fr);
+gap:18px;
 }
 
 .card{
-    height:135px;
-    perspective:1000px;
-    cursor:pointer;
+height:145px;
+perspective:1200px;
+cursor:pointer;
 }
 
 .card-inner{
-    width:100%;
-    height:100%;
-    position:relative;
-    transition:transform .75s;
-    transform-style:preserve-3d;
+position:relative;
+width:100%;
+height:100%;
+transform-style:preserve-3d;
+transition:transform .8s cubic-bezier(.4,.2,.2,1);
 }
 
 .card.open .card-inner{
-    transform:rotateY(180deg);
+transform:rotateY(180deg);
 }
 
 .front,.back{
-    position:absolute;
-    width:100%;
-    height:100%;
-    border-radius:16px;
-    backface-visibility:hidden;
-    box-shadow:0 8px 16px rgba(0,0,0,.15);
+position:absolute;
+inset:0;
+border-radius:22px;
+backface-visibility:hidden;
+display:flex;
+justify-content:center;
+align-items:center;
+padding:14px;
+box-shadow:0 18px 35px rgba(0,0,0,.25);
 }
 
 .front{
-    background:#2f5d8a;
-    display:flex;
-    justify-content:center;
-    align-items:center;
+background:rgba(255,255,255,.10);
+backdrop-filter:blur(14px);
+border:1px solid rgba(255,255,255,.18);
 }
 
 .badge{
-    width:62px;
-    height:62px;
-    border-radius:50%;
-    background:#fff;
-    color:#2f5d8a;
-    font-size:1.8rem;
-    font-weight:900;
-    display:flex;
-    align-items:center;
-    justify-content:center;
+width:68px;
+height:68px;
+border-radius:50%;
+background:linear-gradient(135deg,#ffffff,#dbeafe);
+color:#1d4ed8;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:1.7rem;
+font-weight:900;
+box-shadow:0 10px 20px rgba(0,0,0,.18);
 }
 
 .back{
-    background:#fff;
-    color:#111;
-    transform:rotateY(180deg);
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    text-align:center;
-    padding:10px;
-    font-size:1rem;
-    font-weight:bold;
-    line-height:1.4;
+transform:rotateY(180deg);
+background:white;
+color:#0f172a;
+font-weight:700;
+font-size:1rem;
+line-height:1.45;
+text-align:center;
 }
 
 .controls{
-    text-align:center;
-    margin-top:24px;
+display:flex;
+justify-content:center;
+gap:12px;
+flex-wrap:wrap;
+margin-top:26px;
 }
 
 .controls button{
-    margin:6px;
-    padding:12px 24px;
-    border:none;
-    border-radius:10px;
-    color:#fff;
-    cursor:pointer;
-    font-size:1rem;
-    font-weight:bold;
+padding:13px 24px;
+border:none;
+border-radius:16px;
+font-size:1rem;
+font-weight:800;
+cursor:pointer;
+color:white;
+transition:.22s;
 }
 
-.btn1{background:#c0392b;}
-.btn2{background:#2f5d8a;}
-.btn3{background:#1f5f3b;}
+.controls button:hover{
+transform:translateY(-2px);
+}
+
+.btn1{background:linear-gradient(135deg,#ef4444,#dc2626);}
+.btn2{background:linear-gradient(135deg,#3b82f6,#1d4ed8);}
+.btn3{background:linear-gradient(135deg,#10b981,#059669);}
 
 .answerScreen{
-    display:none;
-    text-align:center;
-    max-width:1000px;
-    margin:30px auto 0;
+display:none;
+text-align:center;
+margin-top:25px;
 }
 
 .answerTitle{
-    font-size:2.4rem;
-    font-weight:bold;
-    color:#0b2239;
-    margin-bottom:20px;
+font-size:2.6rem;
+font-weight:900;
+margin-bottom:18px;
 }
 
 .answerScreen img{
-    max-width:100%;
-    width:750px;
-    border-radius:18px;
-    box-shadow:0 10px 20px rgba(0,0,0,.2);
+width:min(900px,100%);
+border-radius:24px;
+box-shadow:0 20px 40px rgba(0,0,0,.35);
 }
 
 .quote{
-    max-width:850px;
-    margin:22px auto 0;
-    padding:20px;
-    background:#fff;
-    border-radius:16px;
-    font-size:1.35rem;
-    font-weight:bold;
-    line-height:1.7;
-    color:#0b2239;
-    box-shadow:0 8px 18px rgba(0,0,0,.12);
+max-width:900px;
+margin:22px auto;
+padding:24px;
+border-radius:22px;
+background:rgba(255,255,255,.12);
+backdrop-filter:blur(18px);
+border:1px solid rgba(255,255,255,.15);
+font-size:1.28rem;
+line-height:1.8;
+font-weight:700;
 }
 
-.game{
-    display:none;
-}
+.game{display:none;}
+.game.active{display:block;}
 
-.game.active{
-    display:block;
-}
-
-@media(max-width:1000px){
+@media(max-width:1100px){
 .grid{grid-template-columns:repeat(4,1fr);}
 }
 
-@media(max-width:700px){
+@media(max-width:800px){
 .grid{grid-template-columns:repeat(3,1fr);}
+}
+
+@media(max-width:600px){
+.grid{grid-template-columns:repeat(2,1fr);}
+h1{font-size:1.8rem;}
+.card{height:130px;}
 }
 </style>
 </head>
 
 <body>
+<div class="container">
 
 <h1>스무고개 카드 게임</h1>
 
 <div class="topMenu">
-    <button id="btn-penguin" class="activeGame" onclick="selectGame('penguin')">동물 1</button>
-    <button id="btn-albatross" onclick="selectGame('albatross')">동물 2</button>
+<button id="btn-penguin" class="activeGame" onclick="selectGame('penguin')">동물 1</button>
+<button id="btn-albatross" onclick="selectGame('albatross')">동물 2</button>
 </div>
 
 <!-- 황제 펭귄 -->
 <div class="game active" id="penguin">
 
 <div id="penguinGame">
-<div class="sub">1번부터 눌러 힌트를 확인하세요.</div>
-
+<div class="sub">번호 카드를 열며 정답을 맞혀보세요.</div>
 <div class="grid" id="penguinGrid"></div>
 
 <div class="controls">
@@ -222,24 +254,22 @@ h1{
 <img src="https://www.antarctica.gov.au/site/assets/files/67453/rs14963.1600x0.jpg">
 
 <div class="quote">
-“황제 펭귄은 가장 추운 곳에서 생명을 낳습니다.<br>
-자기 몸을 깎아가며, 먹지 못하면서도 끝까지 알을 품습니다.<br>
-왜냐하면 생명이 더 중요하기 때문입니다.”
+황제 펭귄은 가장 추운 곳에서 생명을 낳습니다.<br>
+자기 몸을 깎아가며 먹지 못하면서도 끝까지 알을 품습니다.<br>
+왜냐하면 생명이 더 중요하기 때문입니다.
 </div>
 
 <div class="controls">
 <button class="btn2" onclick="backToGame('penguin')">돌아가기</button>
 </div>
 </div>
-
 </div>
 
 <!-- 알바트로스 -->
 <div class="game" id="albatross">
 
 <div id="albatrossGame">
-<div class="sub">1번부터 눌러 힌트를 확인하세요.</div>
-
+<div class="sub">번호 카드를 열며 정답을 맞혀보세요.</div>
 <div class="grid" id="albatrossGrid"></div>
 
 <div class="controls">
@@ -255,13 +285,14 @@ h1{
 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c4/Diomedea_exulans_in_flight_-_SE_Tasmania.jpg/1280px-Diomedea_exulans_in_flight_-_SE_Tasmania.jpg">
 
 <div class="quote">
-“알바트로스는 좁은 하늘에 머물지 않습니다.<br>
-보이지 않는 바람을 믿고 끝없는 바다를 건너갑니다.<br>
-왜냐하면 큰 생명은 멀리 보기 때문입니다.”
+알바트로스는 텃새와는 다릅니다.<br>
+같은 하늘을 나는 새라도 차원이 다르면 사는 방식 자체가 달라집니다.<br>
+보이지 않는 바람을 믿고 끝없는 바다를 건너갑니다.
 </div>
 
 <div class="controls">
 <button class="btn2" onclick="backToGame('albatross')">돌아가기</button>
+</div>
 </div>
 </div>
 
@@ -269,24 +300,18 @@ h1{
 
 <script>
 function makeCards(targetId,hints){
-    const grid=document.getElementById(targetId);
-
-    hints.forEach((txt,i)=>{
-        const card=document.createElement("div");
-        card.className="card";
-
-        card.innerHTML=`
-        <div class="card-inner">
-            <div class="front">
-                <div class="badge">${i+1}</div>
-            </div>
-            <div class="back">${txt}</div>
-        </div>
-        `;
-
-        card.onclick=()=>card.classList.toggle("open");
-        grid.appendChild(card);
-    });
+const grid=document.getElementById(targetId);
+hints.forEach((txt,i)=>{
+const card=document.createElement("div");
+card.className="card";
+card.innerHTML=`
+<div class="card-inner">
+<div class="front"><div class="badge">${i+1}</div></div>
+<div class="back">${txt}</div>
+</div>`;
+card.onclick=()=>card.classList.toggle("open");
+grid.appendChild(card);
+});
 }
 
 const penguinHints=[
@@ -307,32 +332,31 @@ makeCards("penguinGrid",penguinHints);
 makeCards("albatrossGrid",albaHints);
 
 function showAll(id){
-    document.querySelectorAll("#"+id+" .card").forEach(c=>c.classList.add("open"));
+document.querySelectorAll("#"+id+" .card").forEach(c=>c.classList.add("open"));
 }
 
 function resetCards(id){
-    document.querySelectorAll("#"+id+" .card").forEach(c=>c.classList.remove("open"));
+document.querySelectorAll("#"+id+" .card").forEach(c=>c.classList.remove("open"));
 }
 
 function showAnswer(type){
-    document.getElementById(type+"Game").style.display="none";
-    document.getElementById(type+"Answer").style.display="block";
+document.getElementById(type+"Game").style.display="none";
+document.getElementById(type+"Answer").style.display="block";
 }
 
 function backToGame(type){
-    document.getElementById(type+"Answer").style.display="none";
-    document.getElementById(type+"Game").style.display="block";
-    showAll(type+"Grid");
+document.getElementById(type+"Answer").style.display="none";
+document.getElementById(type+"Game").style.display="block";
+showAll(type+"Grid");
 }
 
 function selectGame(type){
-    document.querySelectorAll(".game").forEach(g=>g.classList.remove("active"));
-    document.getElementById(type).classList.add("active");
+document.querySelectorAll(".game").forEach(g=>g.classList.remove("active"));
+document.getElementById(type).classList.add("active");
 
-    document.getElementById("btn-penguin").classList.remove("activeGame");
-    document.getElementById("btn-albatross").classList.remove("activeGame");
-
-    document.getElementById("btn-"+type).classList.add("activeGame");
+document.getElementById("btn-penguin").classList.remove("activeGame");
+document.getElementById("btn-albatross").classList.remove("activeGame");
+document.getElementById("btn-"+type).classList.add("activeGame");
 }
 </script>
 
