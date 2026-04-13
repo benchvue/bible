@@ -169,6 +169,49 @@ h1{
         font-size:1.1rem;
     }
 }
+/* 모바일 가로모드: 4열 유지 */
+@media screen and (max-width: 950px) and (orientation: landscape){
+
+    body{
+        padding:18px 12px;
+    }
+
+    h1{
+        font-size:1.2rem;
+        margin-bottom:14px;
+        line-height:1.25;
+    }
+
+    .grid{
+        grid-template-columns:repeat(4,1fr) !important;
+        gap:10px;
+    }
+
+    .card{
+        height:105px;
+    }
+
+    .card-front{
+        font-size:1rem;
+    }
+
+    .card-back{
+        font-size:.78rem;
+        line-height:1.15;
+        padding:8px;
+    }
+
+    .col4 .card-back{
+        font-size:.68rem;
+    }
+
+    .vs::after{
+        width:28px;
+        height:28px;
+        right:-8px;
+        font-size:.65rem;
+    }
+}
 </style>
 </head>
 
