@@ -90,16 +90,15 @@ h1{
 }
 
 /* 색상 */
-.col1 .card-front{background:#2f5d8a;}
-.col2 .card-front{background:#c0392b;}
-.col3 .card-front{background:#2e8b57;}
-.col4 .card-front{background:#2f5d8a;}
+.row1 .card-front{background:#2f5d8a;}
+.row2 .card-front{background:#c0392b;}
+.row3 .card-front{background:#2e8b57;}
+.row4 .card-front{background:#2f5d8a;}
 
-.col1 .card-back{background:#1c3e61;}
-.col2 .card-back{background:#8f251b;}
-.col3 .card-back{background:#1f5c39;}
-.col4 .card-back{background:#1c3e61;}
-
+.row1 .card-back{background:#1c3e61;}
+.row2 .card-back{background:#8f251b;}
+.row3 .card-back{background:#1f5c39;}
+.row4 .card-back{background:#1c3e61;}
 
 
 /* PC에서는 4 x 3 */
@@ -115,7 +114,7 @@ h1{
     }
 
     .grid{
-        grid-template-columns:repeat(4,1fr);
+        grid-template-columns:repeat(3,1fr);
         gap:24px;
         max-width:1700px;
     }
@@ -125,23 +124,24 @@ h1{
     }
 
     .card-front{
-        font-size:2rem;
+        font-size:4rem;
     }
 
-    .col1 .card-back{
-        font-size:3rem;
+    .row1 .card-back{
+        font-size:3.5rem;
     }
     .card-back{
         font-size:1.8rem;
     }
-    .col3 .card-back{
+    .row2 .card-back{
         font-size:3rem;
+    }   
+    .row3 .card-back{
+        font-size:4rem;
     }
-    .col4 .card-back{
-        font-size:1.5rem;
+    .row4 .card-back{
+        font-size:2.3rem;
     }
-
-
 }
 </style>
 </head>
@@ -153,81 +153,79 @@ h1{
 <div class="grid">
 
 <!-- 1 -->
-<div class="card col1" onclick="flip(this)">
+<div class="card row1" onclick="flip(this)">
 <div class="card-inner">
 <div class="card-front">비유 1</div>
-<div class="card-back">두 아들</div>
+<div class="card-back">포도원 농부</div>
 </div></div>
 
-<div class="card col2" onclick="flip(this)">
-<div class="card-inner">
-<div class="card-front">도전 1</div>
-<div class="card-back">권위가 어디서 왔느냐?</div>
-</div></div>
-
-<!-- 2 -->
-<div class="card col3" onclick="flip(this)">
-<div class="card-inner">
-<div class="card-front">연결점 1</div>
-<div class="card-back">권위</div>
-</div></div>
-
-<div class="card col4" onclick="flip(this)">
-<div class="card-inner">
-<div class="card-front">답변 1</div>
-<div class="card-back">요한의 세례가 어디로부터 왔느냐<br>하늘로부터냐<br>사람으로부터냐</div>
-</div></div>
-
-<!-- 3 -->
-<div class="card col1" onclick="flip(this)">
+<div class="card row1" onclick="flip(this)">
 <div class="card-inner">
 <div class="card-front">비유 2</div>
-<div class="card-back">악한 농부</div>
+<div class="card-back">건축자의 버린돌</div>
 </div></div>
 
-<div class="card col2" onclick="flip(this)">
-<div class="card-inner">
-<div class="card-front">도전 2</div>
-<div class="card-back">가이사 세금은 누구한테?</div>
-</div></div>
-
-<!-- 4 -->
-<div class="card col3" onclick="flip(this)">
-<div class="card-inner">
-<div class="card-front">연결점 2</div>
-<div class="card-back">소유권</div>
-</div></div>
-
-<div class="card col4" onclick="flip(this)">
-<div class="card-inner">
-<div class="card-front">답변 2</div>
-<div class="card-back">가이사의 것은 가이사에게<br>하나님의 것은 하나님께</div>
-</div></div>
-
-<!-- 5 -->
-<div class="card col1" onclick="flip(this)">
+<div class="card row1" onclick="flip(this)">
 <div class="card-inner">
 <div class="card-front">비유 3</div>
 <div class="card-back">혼인잔치</div>
 </div></div>
 
-<div class="card col2" onclick="flip(this)">
+<!--2 -->
+<div class="card row2" onclick="flip(this)">
 <div class="card-inner">
-<div class="card-front">도전 3</div>
+<div class="card-front">도전 1</div>
+<div class="card-back">가이사 세금은 누구한테?</div>
+</div></div>
+
+<div class="card row2" onclick="flip(this)">
+<div class="card-inner">
+<div class="card-front">도전 2</div>
 <div class="card-back">7형제의 아내는 누구의 아내냐?</div>
 </div></div>
 
-<!-- 6 -->
-<div class="card col3" onclick="flip(this)">
+<div class="card row2" onclick="flip(this)">
 <div class="card-inner">
-<div class="card-front">연결점 3</div>
+<div class="card-front">도전 3</div>
+<div class="card-back">율법 중에서 어느 계명이 크니이까?</div>
+</div></div>
+
+<!-- 3 -->
+<div class="card row3" onclick="flip(this)">
+<div class="card-inner">
+<div class="card-front">연결점 1</div>
+<div class="card-back">세금</div>
+</div></div>
+
+<div class="card row3" onclick="flip(this)">
+<div class="card-inner">
+<div class="card-front">연결점 2</div>
 <div class="card-back">부활</div>
 </div></div>
 
-<div class="card col4" onclick="flip(this)">
+<div class="card row3" onclick="flip(this)">
+<div class="card-inner">
+<div class="card-front">연결점 3</div>
+<div class="card-back">큰계명</div>
+</div></div>
+
+<!-- 4 -->
+<div class="card row4" onclick="flip(this)">
+<div class="card-inner">
+<div class="card-front">답변 1</div>
+<div class="card-back">가이사의 것은 가이사에게<br>하나님의 것은 하나님께</div>
+</div></div>
+
+<div class="card row4" onclick="flip(this)">
+<div class="card-inner">
+<div class="card-front">답변 2</div>
+<div class="card-back">부활 때에는 장가도 아니 가고<br>시집도 아니 가고<br>하늘에 있는 천사들과 같으니라</div>
+</div></div>
+
+<div class="card row4" onclick="flip(this)">
 <div class="card-inner">
 <div class="card-front">답변 3</div>
-<div class="card-back">부활 때에는 장가도 아니 가고<br>시집도 아니 가고<br>하늘에 있는 천사들과 같으니라</div>
+<div class="card-back">주 너의 하나님을 사랑하라<br>네 이웃을 네 자신 같이 사랑</div>
 </div></div>
 
 </div>
