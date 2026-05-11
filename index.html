@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>성경 읽기 - Bible Reader</title>
+
+<!-- 한글 웹폰트: 본고딕(갓피아 기본 스타일), 나눔스퀘어(동글), 궁서체 -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Serif+KR:wght@400;500;700&display=swap">
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_two@1.0/NanumSquareRound.css">
+
+<style>
+/* ─────────────────────────────────────────────
+   1) CSS 변수 (화이트 테마)
+   ───────────────────────────────────────────── */
+:root {
+  --color-bg: #ffffff;
+  --color-bg-soft: #f5f7fa;
+  --color-bg-card: #ffffff;
+  --color-header: #1e3a5f;
+  --color-header-text: #ffffff;
+  --color-primary: #1e3a5f;
+  --color-primary-light: #2c5282;
+  --color-accent: #2563eb;
+  --color-text: #1a202c;
+  --color-text-muted: #6b7280;
+  --color-border: #e5e7eb;
+  --color-border-light: #f3f4f6;
+  --color-tab-active: #1e3a5f;
+  --color-button-bg: #ffffff;
+  --color-button-hover: #f0f4f8;
+  --color-verse-num: #2563eb;
+
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
+  --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+
+  /* 폰트 변수 (기본: 갓피아와 유사한 본고딕) */
+  --font-body: 'Noto Sans KR', 'Pretendard Variable', sans-serif;
+}
+
+/* ─────────────────────────────────────────────
+   2) 폰트 클래스 (설정에서 변경)
+   ───────────────────────────────────────────── */
+body.font-godpia  { --font-body: 'Noto Sans KR', 'Pretendard Variable', sans-serif; }
+body.font-round   { --font-body: 'NanumSquareRound', 'Noto Sans KR', sans-serif; }
+body.font-serif   { --font-body: 'Noto Serif KR', 'GungSuh', '궁서체', serif; }
+body.font-gungseo { --font-body: 'GungSuh', '궁서체', 'Noto Serif KR', serif; }
+
+/* ─────────────────────────────────────────────
+   3) 기본 리셋
+   ───────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--font-body);
+  background: var(--color-bg-soft);
+  color: var(--color-text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+button { font-family: inherit; cursor: pointer; }
+
+/* ─────────────────────────────────────────────
+   4) 헤더 (갓피아 스타일 짙은 네이비)
+   ───────────────────────────────────────────── */
+.header {
+  background: var(--color-header);
+  color: var(--color-header-text);
+  padding: 18px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: var(--shadow-md);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.header h1 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+.header-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.icon-btn {
+  background: rgba(255,255,255,0.12);
+  border: none;
+  color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+.icon-btn:hover { background: rgba(255,255,255,0.25); }
+.icon-btn svg { width: 20px; height: 20px; }
+
+/* ─────────────────────────────────────────────
+   5) 상단 선택 표시 칩 (개역한글 / 창세기 / 1장)
+   ───────────────────────────────────────────── */
+.breadcrumb {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  padding: 28px 20px 20px;
+  flex-wrap: wrap;
+}
+.crumb {
+  background: #d8dde3;
+  color: var(--color-primary);
+  padding: 10px 28px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 500;
+  border: none;
+  transition: all 0.2s;
+}
+.crumb:hover { background: #c8cdd3; }
+
+/* ─────────────────────────────────────────────
+   6) 본문 카드 (성경 표시) - 와이드 레이아웃
+   ───────────────────────────────────────────── */
+/* 레이아웃 래퍼 - 데스크탑에서 좌측 사이드바 + 우측 본문 */
+.layout {
+  display: flex;
+  gap: 24px;
+  max-width: 1800px;
+  margin: 0 auto;
+  padding: 0 24px;
+  align-items: flex-start;
+}
+.main-container {
+  flex: 1;
+  min-width: 0;          /* flexbox 오버플로우 방지 */
+  max-width: 1100px;
+  margin: 0 auto;
+  padding-bottom: 40px;
+}
+.bible-card {
+  background: var(--color-bg-card);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border-light);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+.bible-card-title {
+  background: #d8dde3;
+  color: var(--color-text);
+  padding: 22px;
+  text-align: center;
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0;
+}
+.bible-content {
+  padding: 36px 40px;
+  min-height: calc(100vh - 280px);
+  font-size: 18px;
+  line-height: 2.0;
+}
+.bible-content .verse {
+  margin-bottom: 6px;
+  display: flex;
+  gap: 10px;
+}
+.bible-content .verse-num {
+  color: var(--color-verse-num);
+  font-weight: 700;
+  font-size: 14px;
+  min-width: 28px;
+  padding-top: 6px;
+  flex-shrink: 0;
+}
+.bible-content .verse-text {
+  flex: 1;
+}
+.placeholder {
+  text-align: center;
+  color: var(--color-text-muted);
+  padding: 80px 20px;
+  font-size: 16px;
+}
+
+/* 본문 폰트 크기 클래스 */
+body.size-sm  .bible-content { font-size: 16px; line-height: 1.9; }
+body.size-md  .bible-content { font-size: 18px; line-height: 2.0; }
+body.size-lg  .bible-content { font-size: 20px; line-height: 2.1; }
+body.size-xl  .bible-content { font-size: 23px; line-height: 2.2; }
+body.size-xxl .bible-content { font-size: 27px; line-height: 2.3; }
+
+/* 패널(사이드바) 폰트 크기 클래스 - 탭/그리드버튼/버전 항목 모두 함께 스케일 */
+body.panel-sm  .tab { font-size: 14px; }
+body.panel-md  .tab { font-size: 16px; }
+body.panel-lg  .tab { font-size: 18px; }
+body.panel-xl  .tab { font-size: 20px; }
+body.panel-xxl .tab { font-size: 23px; }
+
+body.panel-sm  .grid-btn { font-size: 12px; padding: 9px 5px; min-height: 36px; }
+body.panel-md  .grid-btn { font-size: 13px; padding: 11px 6px; min-height: 40px; }
+body.panel-lg  .grid-btn { font-size: 15px; padding: 13px 6px; min-height: 44px; }
+body.panel-xl  .grid-btn { font-size: 17px; padding: 14px 6px; min-height: 48px; }
+body.panel-xxl .grid-btn { font-size: 19px; padding: 16px 6px; min-height: 54px; }
+
+body.panel-sm  .version-name { font-size: 13px; }
+body.panel-md  .version-name { font-size: 15px; }
+body.panel-lg  .version-name { font-size: 17px; }
+body.panel-xl  .version-name { font-size: 19px; }
+body.panel-xxl .version-name { font-size: 22px; }
+
+body.panel-sm  .version-desc { font-size: 11px; }
+body.panel-md  .version-desc { font-size: 13px; }
+body.panel-lg  .version-desc { font-size: 14px; }
+body.panel-xl  .version-desc { font-size: 15px; }
+body.panel-xxl .version-desc { font-size: 17px; }
+
+/* ─────────────────────────────────────────────
+   7) 선택 패널 (탭: 구약/신약/장/버전)
+   - 데스크탑(1024px↑): 왼쪽 사이드바
+   - 모바일(<1024px):   하단 고정 패널
+   ───────────────────────────────────────────── */
+.selector-panel {
+  background: #f5f5f7;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  z-index: 90;
+  display: flex;
+  flex-direction: column;
+
+  /* 데스크탑 기본: 왼쪽 사이드바 (sticky로 스크롤 따라옴) */
+  width: 380px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 88px;             /* 헤더 높이 + 여백 */
+  max-height: calc(100vh - 110px);
+  overflow: hidden;
+}
+.selector-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 28px;
+  padding: 18px 20px 10px;
+  border-bottom: 1px solid var(--color-border-light);
+  background: white;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+.tab {
+  background: none;
+  border: none;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  padding: 8px 4px 12px;
+  position: relative;
+  transition: color 0.2s;
+}
+.tab.active {
+  color: var(--color-tab-active);
+  font-weight: 700;
+}
+.tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 28px;
+  height: 3px;
+  background: var(--color-accent);
+  border-radius: 2px;
+}
+.tab::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 28px;
+  height: 1px;
+  background: var(--color-border);
+}
+.selector-content {
+  padding: 18px 20px 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* 책/장 그리드 버튼 (사이드바 너비에 최적화) */
+.item-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);  /* 책: 3열 */
+  gap: 8px;
+}
+.item-grid.chapter-grid {
+  grid-template-columns: repeat(5, 1fr);  /* 장: 5열 */
+}
+.grid-btn {
+  background: var(--color-button-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 11px 6px;
+  font-size: 13px;
+  color: var(--color-text);
+  text-align: center;
+  transition: all 0.15s;
+  min-height: 40px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.grid-btn:hover {
+  background: var(--color-button-hover);
+  border-color: var(--color-primary-light);
+}
+.grid-btn.active {
+  background: var(--color-tab-active);
+  color: white;
+  border-color: var(--color-tab-active);
+  font-weight: 700;
+}
+
+/* 버전 리스트 */
+.version-list { display: grid; gap: 10px; max-width: 400px; margin: 0 auto; }
+.version-item {
+  background: white;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 14px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.15s;
+}
+.version-item:hover { background: var(--color-button-hover); }
+.version-item.active {
+  border-color: var(--color-tab-active);
+  background: #e6f0ff;
+}
+.version-name { font-weight: 500; }
+.version-desc { font-size: 13px; color: var(--color-text-muted); }
+
+/* ─────────────────────────────────────────────
+   8) 설정 모달
+   ───────────────────────────────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 20px;
+}
+.modal-overlay.show { display: flex; }
+.modal {
+  background: white;
+  border-radius: var(--radius-md);
+  padding: 32px;
+  max-width: 480px;
+  width: 100%;
+  box-shadow: var(--shadow-lg);
+}
+.modal h2 {
+  margin: 0 0 24px;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+.modal-section { margin-bottom: 24px; }
+.modal-section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.font-option-group, .size-option-group {
+  display: grid;
+  gap: 8px;
+}
+.size-option-group { grid-template-columns: repeat(5, 1fr); }
+.font-option {
+  background: white;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  text-align: left;
+  transition: all 0.15s;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.font-option:hover { border-color: var(--color-primary-light); }
+.font-option.active {
+  border-color: var(--color-accent);
+  background: #eff6ff;
+}
+.font-option-name { font-weight: 600; font-size: 15px; }
+.font-option-sample { font-size: 13px; color: var(--color-text-muted); }
+
+/* 미리보기 폰트 */
+.preview-godpia  { font-family: 'Noto Sans KR', sans-serif; }
+.preview-round   { font-family: 'NanumSquareRound', sans-serif; }
+.preview-serif   { font-family: 'Noto Serif KR', serif; }
+.preview-gungseo { font-family: 'GungSuh', '궁서체', serif; }
+
+.size-option {
+  background: white;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 10px 4px;
+  text-align: center;
+  transition: all 0.15s;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.size-option:hover { border-color: var(--color-primary-light); }
+.size-option.active {
+  border-color: var(--color-accent);
+  background: #eff6ff;
+  color: var(--color-accent);
+}
+
+.modal-close {
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  font-weight: 600;
+  width: 100%;
+  margin-top: 8px;
+  transition: background 0.2s;
+}
+.modal-close:hover { background: var(--color-primary-light); }
+
+/* ─────────────────────────────────────────────
+   9) 로딩/에러 상태
+   ───────────────────────────────────────────── */
+.loading {
+  text-align: center;
+  padding: 80px 20px;
+  color: var(--color-text-muted);
+}
+.loading::before {
+  content: '';
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--color-border);
+  border-top-color: var(--color-accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 16px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.error {
+  background: #fef2f2;
+  color: #991b1b;
+  padding: 20px;
+  border-radius: var(--radius-sm);
+  border: 1px solid #fecaca;
+  text-align: center;
+  margin: 20px 0;
+}
+
+/* ─────────────────────────────────────────────
+   10) 태블릿/모바일 대응
+   - 1024px 미만: 사이드바를 하단 고정 패널로 전환
+   ───────────────────────────────────────────── */
+@media (max-width: 1023px) {
+  .layout {
+    display: block;
+    padding: 0 20px;
+    max-width: 100%;
+  }
+  .main-container {
+    max-width: 900px;
+    padding-bottom: 200px;
+  }
+  .selector-panel {
+    /* 하단 고정 패널로 복귀 */
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: auto;
+    width: 100%;
+    max-height: 60vh;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+    border-top: 1px solid var(--color-border);
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+  }
+  .selector-tabs {
+    border-radius: 0;
+  }
+  /* 모바일에서는 책 그리드를 더 많은 열로 */
+  .item-grid {
+    grid-template-columns: repeat(auto-fill, minmax(95px, 1fr));
+  }
+  .item-grid.chapter-grid {
+    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .header { padding: 14px 20px; }
+  .header h1 { font-size: 18px; }
+  .bible-content { padding: 24px 20px; font-size: 17px; }
+  body.size-sm  .bible-content { font-size: 15px; }
+  body.size-md  .bible-content { font-size: 17px; }
+  body.size-lg  .bible-content { font-size: 19px; }
+  body.size-xl  .bible-content { font-size: 21px; }
+  body.size-xxl .bible-content { font-size: 24px; }
+  .selector-tabs { gap: 20px; padding: 14px 16px 8px; }
+  .selector-content { padding: 16px 14px 24px; }
+  .item-grid { grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); }
+  .item-grid.chapter-grid { grid-template-columns: repeat(7, 1fr); }
+  .grid-btn { font-size: 13px; padding: 10px 4px; min-height: 38px; }
+  .crumb { padding: 8px 18px; font-size: 14px; }
+  .selector-panel { max-height: 55vh; }
+}
+
+/* ─────────────────────────────────────────────
+   11) 30인치 이상 와이드 모니터 - 본문 더 넓게
+   ───────────────────────────────────────────── */
+@media (min-width: 1600px) {
+  .layout {
+    gap: 40px;
+    padding: 0 40px;
+  }
+  .selector-panel {
+    width: 420px;
+  }
+  .main-container {
+    max-width: 1200px;
+  }
+  .bible-content {
+    padding: 48px 60px;
+  }
+}
+</style>
+</head>
+<body class="font-godpia size-md panel-md">
+
+<!-- ─────────────────────────────────────────────
+     헤더
+     ───────────────────────────────────────────── -->
+<header class="header">
+  <h1>성경 읽기</h1>
+  <div class="header-actions">
+    <button class="icon-btn" id="settingsBtn" title="설정">
+      <!-- 설정(기어) 아이콘 -->
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<!-- ─────────────────────────────────────────────
+     상단 선택 표시 칩
+     ───────────────────────────────────────────── -->
+<div class="breadcrumb">
+  <button class="crumb" id="crumbVersion">개역한글</button>
+  <button class="crumb" id="crumbBook">창세기</button>
+  <button class="crumb" id="crumbChapter">1장</button>
+</div>
+
+<!-- ─────────────────────────────────────────────
+     레이아웃: 좌측 사이드바 + 우측 본문
+     ───────────────────────────────────────────── -->
+<div class="layout">
+
+  <!-- 좌측 사이드바 (모바일에서는 하단 고정으로 전환) -->
+  <aside class="selector-panel">
+    <nav class="selector-tabs">
+      <button class="tab active" data-tab="ot">구약</button>
+      <button class="tab" data-tab="nt">신약</button>
+      <button class="tab" data-tab="chapter">장</button>
+      <button class="tab" data-tab="version">버전</button>
+    </nav>
+    <div class="selector-content" id="selectorContent">
+      <!-- 동적으로 채워짐 -->
+    </div>
+  </aside>
+
+  <!-- 우측 본문 -->
+  <main class="main-container">
+    <article class="bible-card">
+      <h2 class="bible-card-title" id="bibleTitle">창세기 1장</h2>
+      <div class="bible-content" id="bibleContent">
+        <div class="placeholder">아래에서 책과 장을 선택하세요.</div>
+      </div>
+    </article>
+  </main>
+
+</div>
+
+<!-- ─────────────────────────────────────────────
+     설정 모달
+     ───────────────────────────────────────────── -->
+<div class="modal-overlay" id="settingsModal">
+  <div class="modal">
+    <h2>설정</h2>
+
+    <div class="modal-section">
+      <div class="modal-section-title">서체</div>
+      <div class="font-option-group" id="fontOptionGroup">
+        <button class="font-option" data-font="godpia">
+          <span class="font-option-name preview-godpia">기본 (본고딕)</span>
+          <span class="font-option-sample preview-godpia">갓피아 스타일</span>
+        </button>
+        <button class="font-option" data-font="round">
+          <span class="font-option-name preview-round">나눔스퀘어 (동글동글)</span>
+          <span class="font-option-sample preview-round">부드럽고 둥근 느낌</span>
+        </button>
+        <button class="font-option" data-font="serif">
+          <span class="font-option-name preview-serif">본명조</span>
+          <span class="font-option-sample preview-serif">전통 명조체</span>
+        </button>
+        <button class="font-option" data-font="gungseo">
+          <span class="font-option-name preview-gungseo">궁서체</span>
+          <span class="font-option-sample preview-gungseo">붓글씨 느낌</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-title">본문 글자 크기</div>
+      <div class="size-option-group" id="sizeOptionGroup">
+        <button class="size-option" data-size="sm"  style="font-size: 12px;">작게</button>
+        <button class="size-option" data-size="md"  style="font-size: 13px;">보통</button>
+        <button class="size-option" data-size="lg"  style="font-size: 14px;">크게</button>
+        <button class="size-option" data-size="xl"  style="font-size: 16px;">더 크게</button>
+        <button class="size-option" data-size="xxl" style="font-size: 18px;">더더 크게</button>
+      </div>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-title">패널 글자 크기</div>
+      <div class="size-option-group" id="panelSizeOptionGroup">
+        <button class="size-option panel-size-option" data-panel-size="sm"  style="font-size: 12px;">작게</button>
+        <button class="size-option panel-size-option" data-panel-size="md"  style="font-size: 13px;">보통</button>
+        <button class="size-option panel-size-option" data-panel-size="lg"  style="font-size: 14px;">크게</button>
+        <button class="size-option panel-size-option" data-panel-size="xl"  style="font-size: 16px;">더 크게</button>
+        <button class="size-option panel-size-option" data-panel-size="xxl" style="font-size: 18px;">더더 크게</button>
+      </div>
+    </div>
+
+    <button class="modal-close" id="closeSettings">확인</button>
+  </div>
+</div>
+
+<!-- ─────────────────────────────────────────────
+     JavaScript
+     ───────────────────────────────────────────── -->
+<script>
+// ─────────────────────────────────────────────
+// 1) 성경 66권 데이터
+// [영문폴더명, 한글이름, 장 수, 구약/신약]
+// ─────────────────────────────────────────────
+const BOOKS = [
+  // 구약 (39권)
+  ['Genesis',         '창세기',      50, 'ot'],
+  ['Exodus',          '출애굽기',    40, 'ot'],
+  ['Leviticus',       '레위기',      27, 'ot'],
+  ['Numbers',         '민수기',      36, 'ot'],
+  ['Deuteronomy',     '신명기',      34, 'ot'],
+  ['Joshua',          '여호수아',    24, 'ot'],
+  ['Judges',          '사사기',      21, 'ot'],
+  ['Ruth',            '룻기',         4, 'ot'],
+  ['1Samuel',         '사무엘상',    31, 'ot'],
+  ['2Samuel',         '사무엘하',    24, 'ot'],
+  ['1Kings',          '열왕기상',    22, 'ot'],
+  ['2Kings',          '열왕기하',    25, 'ot'],
+  ['1Chronicles',     '역대상',      29, 'ot'],
+  ['2Chronicles',     '역대하',      36, 'ot'],
+  ['Ezra',            '에스라',      10, 'ot'],
+  ['Nehemiah',        '느헤미야',    13, 'ot'],
+  ['Esther',          '에스더',      10, 'ot'],
+  ['Job',             '욥기',        42, 'ot'],
+  ['Psalms',          '시편',       150, 'ot'],
+  ['Proverbs',        '잠언',        31, 'ot'],
+  ['Ecclesiastes',    '전도서',      12, 'ot'],
+  ['SongOfSolomon',   '아가',         8, 'ot'],
+  ['Isaiah',          '이사야',      66, 'ot'],
+  ['Jeremiah',        '예레미야',    52, 'ot'],
+  ['Lamentations',    '예레미야애가', 5, 'ot'],
+  ['Ezekiel',         '에스겔',      48, 'ot'],
+  ['Daniel',          '다니엘',      12, 'ot'],
+  ['Hosea',           '호세아',      14, 'ot'],
+  ['Joel',            '요엘',         3, 'ot'],
+  ['Amos',            '아모스',       9, 'ot'],
+  ['Obadiah',         '오바댜',       1, 'ot'],
+  ['Jonah',           '요나',         4, 'ot'],
+  ['Micah',           '미가',         7, 'ot'],
+  ['Nahum',           '나훔',         3, 'ot'],
+  ['Habakkuk',        '하박국',       3, 'ot'],
+  ['Zephaniah',       '스바냐',       3, 'ot'],
+  ['Haggai',          '학개',         2, 'ot'],
+  ['Zechariah',       '스가랴',      14, 'ot'],
+  ['Malachi',         '말라기',       4, 'ot'],
+  // 신약 (27권)
+  ['Matthew',         '마태복음',    28, 'nt'],
+  ['Mark',            '마가복음',    16, 'nt'],
+  ['Luke',            '누가복음',    24, 'nt'],
+  ['John',            '요한복음',    21, 'nt'],
+  ['Acts',            '사도행전',    28, 'nt'],
+  ['Romans',          '로마서',      16, 'nt'],
+  ['1Corinthians',    '고린도전서',  16, 'nt'],
+  ['2Corinthians',    '고린도후서',  13, 'nt'],
+  ['Galatians',       '갈라디아서',   6, 'nt'],
+  ['Ephesians',       '에베소서',     6, 'nt'],
+  ['Philippians',     '빌립보서',     4, 'nt'],
+  ['Colossians',      '골로새서',     4, 'nt'],
+  ['1Thessalonians',  '데살로니가전서', 5, 'nt'],
+  ['2Thessalonians',  '데살로니가후서', 3, 'nt'],
+  ['1Timothy',        '디모데전서',   6, 'nt'],
+  ['2Timothy',        '디모데후서',   4, 'nt'],
+  ['Titus',           '디도서',       3, 'nt'],
+  ['Philemon',        '빌레몬서',     1, 'nt'],
+  ['Hebrews',         '히브리서',    13, 'nt'],
+  ['James',           '야고보서',     5, 'nt'],
+  ['1Peter',          '베드로전서',   5, 'nt'],
+  ['2Peter',          '베드로후서',   3, 'nt'],
+  ['1John',           '요한1서',      5, 'nt'],
+  ['2John',           '요한2서',      1, 'nt'],
+  ['3John',           '요한3서',      1, 'nt'],
+  ['Jude',            '유다서',       1, 'nt'],
+  ['Revelation',      '요한계시록',  22, 'nt'],
+];
+
+const VERSIONS = [
+  { id: 'krv', name: '개역한글', desc: 'Korean Revised Version (1961)' },
+];
+
+const CHAPTERS_PER_FILE = 5;
+
+// ─────────────────────────────────────────────
+// 2) 상태 관리
+// ─────────────────────────────────────────────
+let state = {
+  tab: 'ot',
+  bookIndex: 0,   // 0 = 창세기
+  chapter: 1,
+  version: 'krv',
+  font: 'godpia',
+  size: 'md',
+  panelSize: 'md',
+};
+
+// ─────────────────────────────────────────────
+// 쿠키 헬퍼 함수
+// ─────────────────────────────────────────────
+function setCookie(name, value, days = 365) {
+  try {
+    const expires = new Date(Date.now() + days * 864e5).toUTCString();
+    document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/; SameSite=Lax`;
+  } catch(e) { console.warn('쿠키 저장 실패', e); }
+}
+function getCookie(name) {
+  try {
+    const match = document.cookie.split('; ').find(row => row.startsWith(name + '='));
+    return match ? decodeURIComponent(match.split('=')[1]) : null;
+  } catch(e) { return null; }
+}
+
+// 쿠키에서 설정 불러오기
+function loadSettings() {
+  // 먼저 화면 크기에 따라 기본 size를 결정
+  // 데스크탑(1024px+): xl (더 크게), 모바일/태블릿: md (보통)
+  const isDesktop = window.matchMedia('(min-width: 1024px)').matches;
+  state.size      = isDesktop ? 'xl' : 'md';
+  state.panelSize = isDesktop ? 'xl' : 'md';
+
+  // 사용자가 직접 설정한 값이 쿠키에 있으면 그것이 우선
+  try {
+    const saved = getCookie('bibleReaderSettings');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      state = { ...state, ...parsed };
+    }
+  } catch(e) { console.warn('설정 로드 실패', e); }
+}
+function saveSettings() {
+  setCookie('bibleReaderSettings', JSON.stringify({
+    bookIndex: state.bookIndex,
+    chapter: state.chapter,
+    version: state.version,
+    font: state.font,
+    size: state.size,
+    panelSize: state.panelSize,
+  }), 365); // 1년간 유지
+}
+
+// ─────────────────────────────────────────────
+// 3) DOM 요소
+// ─────────────────────────────────────────────
+const $ = sel => document.querySelector(sel);
+const $$ = sel => document.querySelectorAll(sel);
+
+const elTitle = $('#bibleTitle');
+const elContent = $('#bibleContent');
+const elCrumbVersion = $('#crumbVersion');
+const elCrumbBook = $('#crumbBook');
+const elCrumbChapter = $('#crumbChapter');
+const elSelectorContent = $('#selectorContent');
+const elSettingsModal = $('#settingsModal');
+
+// ─────────────────────────────────────────────
+// 4) 텍스트 파일 경로 계산
+// 파일 이름 형식:
+//   - 1장짜리 책: "오바댜1장.txt"
+//   - 다중 장:    "창세기1-5장.txt"
+// ─────────────────────────────────────────────
+function getFilePath(bookIndex, chapter) {
+  const [engName, korName, totalChapters] = BOOKS[bookIndex];
+
+  if (totalChapters === 1) {
+    return `output/${engName}/${korName}1장.txt`;
+  }
+
+  // 5장씩 묶인 파일 중 어느 파일에 들어있는지 계산
+  const fileStartChapter = Math.floor((chapter - 1) / CHAPTERS_PER_FILE) * CHAPTERS_PER_FILE + 1;
+  const fileEndChapter   = Math.min(fileStartChapter + CHAPTERS_PER_FILE - 1, totalChapters);
+  return `output/${engName}/${korName}${fileStartChapter}-${fileEndChapter}장.txt`;
+}
+
+// ─────────────────────────────────────────────
+// 5) 본문 파일 로드 및 파싱
+// 파일 형식:
+//   【 창세기 1장 】
+//   (빈 줄)
+//   1 태초에 하나님이...
+//   2 땅이 혼돈하고...
+//   ────────────────
+//   【 창세기 2장 】
+//   ...
+// ─────────────────────────────────────────────
+async function loadChapter(bookIndex, chapter) {
+  const [engName, korName] = BOOKS[bookIndex];
+  const path = getFilePath(bookIndex, chapter);
+  // GitHub Pages에서 한글 파일명을 정상 처리하기 위해 URL 인코딩
+  const encodedPath = path.split('/').map(encodeURIComponent).join('/');
+
+  elTitle.textContent = `${korName} ${chapter}장`;
+  elContent.innerHTML = '<div class="loading">불러오는 중...</div>';
+
+  try {
+    const res = await fetch(encodedPath);
+    if (!res.ok) throw new Error(`파일을 찾을 수 없습니다: ${path}`);
+    const text = await res.text();
+
+    // 해당 장만 추출
+    const verses = parseChapter(text, korName, chapter);
+    if (verses.length === 0) {
+      throw new Error(`${korName} ${chapter}장을 파일에서 찾지 못했습니다.`);
+    }
+
+    // HTML로 렌더링
+    elContent.innerHTML = verses.map(v =>
+      `<div class="verse"><span class="verse-num">${v.num}</span><span class="verse-text">${escapeHtml(v.text)}</span></div>`
+    ).join('');
+  } catch (err) {
+    elContent.innerHTML = `<div class="error">⚠️ ${err.message}<br><small>경로: ${path}</small></div>`;
+    console.error(err);
+  }
+}
+
+function parseChapter(text, korName, chapter) {
+  const lines = text.split('\n');
+  const targetHeader = `${korName} ${chapter}장`;
+
+  let inTargetChapter = false;
+  const verses = [];
+
+  for (const rawLine of lines) {
+    const line = rawLine.trim();
+
+    // 장 헤더 감지: 【 창세기 1장 】
+    if (line.includes('【') && line.includes('장')) {
+      inTargetChapter = line.includes(targetHeader);
+      continue;
+    }
+    // 구분선
+    if (line.startsWith('─') || line === '') continue;
+
+    // "1 본문..." 형식의 절 파싱
+    if (inTargetChapter) {
+      const m = line.match(/^(\d+)\s+(.+)$/);
+      if (m) {
+        verses.push({ num: parseInt(m[1], 10), text: m[2] });
+      }
+    }
+  }
+  return verses;
+}
+
+function escapeHtml(s) {
+  return s.replace(/[&<>"']/g, c => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[c]));
+}
+
+// ─────────────────────────────────────────────
+// 6) 선택 패널 렌더링
+// ─────────────────────────────────────────────
+function renderSelector() {
+  const tab = state.tab;
+
+  if (tab === 'ot' || tab === 'nt') {
+    const books = BOOKS
+      .map((b, idx) => ({ ...b, idx, eng: b[0], kor: b[1], chapters: b[2], testament: b[3] }))
+      .filter(b => b.testament === tab);
+
+    elSelectorContent.innerHTML = `
+      <div class="item-grid">
+        ${books.map(b => `
+          <button class="grid-btn ${b.idx === state.bookIndex ? 'active' : ''}" data-book="${b.idx}">
+            ${b.kor}
+          </button>
+        `).join('')}
+      </div>
+    `;
+
+    elSelectorContent.querySelectorAll('[data-book]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        state.bookIndex = parseInt(btn.dataset.book, 10);
+        state.chapter = 1;
+        const [, korName, total, testament] = BOOKS[state.bookIndex];
+        state.tab = testament; // 탭 유지
+        updateUI();
+        // 책 선택 후 자동으로 장 탭으로 전환 (1장짜리 책은 제외)
+        if (total > 1) {
+          state.tab = 'chapter';
+          renderSelector();
+          $$('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === 'chapter'));
+        }
+        loadChapter(state.bookIndex, state.chapter);
+        saveSettings();
+      });
+    });
+  }
+  else if (tab === 'chapter') {
+    const [, korName, totalChapters] = BOOKS[state.bookIndex];
+    const chapters = Array.from({ length: totalChapters }, (_, i) => i + 1);
+
+    elSelectorContent.innerHTML = `
+      <div class="item-grid chapter-grid">
+        ${chapters.map(ch => `
+          <button class="grid-btn ${ch === state.chapter ? 'active' : ''}" data-chapter="${ch}">
+            ${ch}
+          </button>
+        `).join('')}
+      </div>
+    `;
+
+    elSelectorContent.querySelectorAll('[data-chapter]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        state.chapter = parseInt(btn.dataset.chapter, 10);
+        updateUI();
+        loadChapter(state.bookIndex, state.chapter);
+        saveSettings();
+      });
+    });
+  }
+  else if (tab === 'version') {
+    elSelectorContent.innerHTML = `
+      <div class="version-list">
+        ${VERSIONS.map(v => `
+          <button class="version-item ${v.id === state.version ? 'active' : ''}" data-version="${v.id}">
+            <div>
+              <div class="version-name">${v.name}</div>
+              <div class="version-desc">${v.desc}</div>
+            </div>
+            ${v.id === state.version ? '<span style="color:var(--color-accent);font-weight:700;">✓</span>' : ''}
+          </button>
+        `).join('')}
+      </div>
+      <p style="text-align:center;color:var(--color-text-muted);font-size:13px;margin-top:20px;">
+        현재 개역한글(공개 도메인)만 제공됩니다.
+      </p>
+    `;
+  }
+}
+
+// ─────────────────────────────────────────────
+// 7) UI 업데이트 (상단 표시 칩)
+// ─────────────────────────────────────────────
+function updateUI() {
+  const [, korName] = BOOKS[state.bookIndex];
+  const versionName = VERSIONS.find(v => v.id === state.version)?.name || '';
+  elCrumbVersion.textContent = versionName;
+  elCrumbBook.textContent = korName;
+  elCrumbChapter.textContent = `${state.chapter}장`;
+}
+
+// ─────────────────────────────────────────────
+// 8) 탭 클릭 핸들러
+// ─────────────────────────────────────────────
+$$('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    state.tab = tab.dataset.tab;
+    $$('.tab').forEach(t => t.classList.toggle('active', t === tab));
+    renderSelector();
+  });
+});
+
+// ─────────────────────────────────────────────
+// 9) 상단 칩 클릭 (해당 탭으로 점프)
+// ─────────────────────────────────────────────
+elCrumbVersion.addEventListener('click', () => switchTab('version'));
+elCrumbBook.addEventListener('click', () => {
+  const testament = BOOKS[state.bookIndex][3];
+  switchTab(testament);
+});
+elCrumbChapter.addEventListener('click', () => switchTab('chapter'));
+
+function switchTab(tabName) {
+  state.tab = tabName;
+  $$('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tabName));
+  renderSelector();
+}
+
+// ─────────────────────────────────────────────
+// 10) 설정 모달
+// ─────────────────────────────────────────────
+$('#settingsBtn').addEventListener('click', () => {
+  elSettingsModal.classList.add('show');
+  highlightSettings();
+});
+$('#closeSettings').addEventListener('click', () => {
+  elSettingsModal.classList.remove('show');
+});
+elSettingsModal.addEventListener('click', (e) => {
+  if (e.target === elSettingsModal) elSettingsModal.classList.remove('show');
+});
+
+function highlightSettings() {
+  $$('.font-option').forEach(b => b.classList.toggle('active', b.dataset.font === state.font));
+  $$('.size-option').forEach(b => {
+    if (b.dataset.size) {
+      b.classList.toggle('active', b.dataset.size === state.size);
+    } else if (b.dataset.panelSize) {
+      b.classList.toggle('active', b.dataset.panelSize === state.panelSize);
+    }
+  });
+}
+
+$$('.font-option').forEach(btn => {
+  btn.addEventListener('click', () => {
+    state.font = btn.dataset.font;
+    applyFont();
+    highlightSettings();
+    saveSettings();
+  });
+});
+$$('.size-option').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (btn.dataset.size) {
+      // 본문 글자 크기
+      state.size = btn.dataset.size;
+      applySize();
+    } else if (btn.dataset.panelSize) {
+      // 패널 글자 크기
+      state.panelSize = btn.dataset.panelSize;
+      applyPanelSize();
+    }
+    highlightSettings();
+    saveSettings();
+  });
+});
+
+function applyFont() {
+  document.body.classList.remove('font-godpia', 'font-round', 'font-serif', 'font-gungseo');
+  document.body.classList.add(`font-${state.font}`);
+}
+function applySize() {
+  document.body.classList.remove('size-sm', 'size-md', 'size-lg', 'size-xl', 'size-xxl');
+  document.body.classList.add(`size-${state.size}`);
+}
+function applyPanelSize() {
+  document.body.classList.remove('panel-sm', 'panel-md', 'panel-lg', 'panel-xl', 'panel-xxl');
+  document.body.classList.add(`panel-${state.panelSize}`);
+}
+
+// ─────────────────────────────────────────────
+// 11) 초기화
+// ─────────────────────────────────────────────
+function init() {
+  loadSettings();
+  applyFont();
+  applySize();
+  applyPanelSize();
+
+  // 마지막에 본 책의 구약/신약에 따라 탭 초기화
+  state.tab = BOOKS[state.bookIndex][3];
+  $$('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === state.tab));
+
+  updateUI();
+  renderSelector();
+  loadChapter(state.bookIndex, state.chapter);
+}
+
+init();
+</script>
+</body>
+</html>
